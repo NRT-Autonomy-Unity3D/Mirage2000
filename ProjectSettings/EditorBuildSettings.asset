@@ -7,5 +7,5 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/Mirage 2000/Scenes/Mirage2000.unity
-    guid: 1a82841498be1664e897b511d3b47221
+    guid: 6f662515c5aefd542ba6f0e108ed6afe
   m_configObjects: {}

@@ -33,7 +33,7 @@ public class SilantroMunition : MonoBehaviour {
 	[HideInInspector]public string detonationMechanism = "Default";
 	[HideInInspector]public float timer = 10f;
 	[HideInInspector]public float selfDestructTimer;
-	float triggerTimer;
+	public float triggerTimer;
 	//PROXIMITY
 	[HideInInspector]public float proximity = 100f;//Distance to target
 	[HideInInspector]public Transform target;
@@ -106,8 +106,8 @@ public class SilantroMunition : MonoBehaviour {
 	[HideInInspector]public float energy;
 	[HideInInspector]public GameObject explosionPrefab;
 	bool exploded;
-	//
-	//
+
+
 	//4. BULLET
 	//
 	//PROPERTIES
@@ -273,6 +273,8 @@ public class SilantroMunition : MonoBehaviour {
 				computer.Target = markedTarget;
 				computer.targetID = ID;
 				target = markedTarget;
+				//DISABLE GRAVITY
+				munition.useGravity = false;
 				//ACTIVATE SEEKER
 				computer.seeking = true;
 				computer.active = true;
@@ -338,6 +340,8 @@ public class SilantroMunition : MonoBehaviour {
 		computer.Target = markedTarget;
 		computer.targetID = ID;
 		target = markedTarget;
+		//DISABLE GRAVITY
+		munition.useGravity = false;
 		//ACTIVATE SEEKER
 		computer.seeking = true;
 		computer.active = true;
@@ -379,12 +383,13 @@ public class SilantroMunition : MonoBehaviour {
 		//SET FACTORS
 		if (munition != null) {
 			if (munitionType != MunitionType.Bullet) {
+				munition.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 				munition.mass = munitionWeight;
 				munition.isKinematic = true;
 			} else {
 				munition.mass = ((mass*0.0648f)/1000f);
 			}
-			munition.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+			
 		} else {
 			Debug.Log ("Rigidbody for munition is missing " + transform.name);
 		}
@@ -729,7 +734,7 @@ public class SilantroMunition : MonoBehaviour {
 	void LateUpdate()
 	{
 		//ROTATE MUNITION IN TRAVEL DIRECTION
-		if (munition != null && armed) {
+		if (munition != null && armed && munitionType == MunitionType.Bomb) {
 			munition.transform.forward = Vector3.Slerp (munition.transform.forward, munition.velocity.normalized, Time.deltaTime);
 		}
 	}

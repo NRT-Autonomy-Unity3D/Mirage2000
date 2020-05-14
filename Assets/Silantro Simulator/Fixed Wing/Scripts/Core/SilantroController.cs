@@ -1692,14 +1692,13 @@ public class SilantroController : MonoBehaviour {
 	// ----------------------------------------------------------------------------------------------------------------------------------------------------------
 	void CollectData()
 	{
-		//PROCESS ENGINES
-		totalConsumptionRate = 0f;
+		//-------------------------PROCESS ENGINES
+		
 		//TURBO JET
 		if (engineType == EngineType.TurboJet) {
 			totalThrustGenerated = 0;totalConsumptionRate = 0;
 			foreach (SilantroTurboJet turbojet in turboJets) {
-				totalThrustGenerated += turbojet.EngineThrust;
-				totalConsumptionRate += turbojet.actualConsumptionrate;
+				if (turbojet.active) { totalThrustGenerated += turbojet.EngineThrust; totalConsumptionRate += turbojet.actualConsumptionrate; }
 			}
 			//COLLECT MAIN ENGINE DATA
 			SilantroTurboJet sampleEngine = turboJets [0];
@@ -1712,8 +1711,7 @@ public class SilantroController : MonoBehaviour {
 		if (engineType == EngineType.TurboFan) {
 			totalThrustGenerated = 0;totalConsumptionRate = 0;
 			foreach (SilantroTurboFan turbofan in turboFans) {
-				totalThrustGenerated += turbofan.EngineThrust;
-				totalConsumptionRate += turbofan.actualConsumptionrate;
+				if (turbofan.active) { totalThrustGenerated += turbofan.EngineThrust; totalConsumptionRate += turbofan.actualConsumptionrate; }
 			}
 			//COLLECT MAIN ENGINE DATA
 			SilantroTurboFan sampleEngine = turboFans [0];
@@ -1726,10 +1724,10 @@ public class SilantroController : MonoBehaviour {
 		if (engineType == EngineType.Piston) {
 			totalThrustGenerated = 0;totalConsumptionRate = 0;
 			foreach (SilantroPistonEngine piston in pistons) {
-				totalConsumptionRate += piston.actualConsumptionrate;
+				if (piston.active) { totalConsumptionRate += piston.actualConsumptionrate; }
 			}
 			foreach (SilantroBlade blade in blades) {
-				totalThrustGenerated += blade.Thrust;
+				if (blade.currentRPM > 10f) { totalThrustGenerated += blade.Thrust; }
 			}
 			//COLLECT MAIN ENGINE DATA
 			SilantroPistonEngine sampleEngine = pistons [0];
@@ -1743,7 +1741,7 @@ public class SilantroController : MonoBehaviour {
 		if (engineType == EngineType.Electric) {
 			totalThrustGenerated = 0;
 			foreach (SilantroBlade blade in blades) {
-				totalThrustGenerated += blade.Thrust;
+				if (blade.currentRPM > 10f) { totalThrustGenerated += blade.Thrust; }
 			}
 
 		}
@@ -1751,10 +1749,10 @@ public class SilantroController : MonoBehaviour {
 		if (engineType == EngineType.TurboShaft) {
 			totalThrustGenerated = 0;totalConsumptionRate = 0;
 			foreach (SilantroTurboShaft shaft in turboShafts) {
-				totalConsumptionRate += shaft.actualConsumptionrate;
+				if (shaft.active) { totalConsumptionRate += shaft.actualConsumptionrate; }
 			}
 			foreach (SilantroBlade blade in blades) {
-				totalThrustGenerated += blade.Thrust;
+				if (blade.currentRPM > 10f) { totalThrustGenerated += blade.Thrust; }
 			}
 			//COLLECT MAIN ENGINE DATA
 			SilantroTurboShaft sampleEngine = turboShafts [0];
@@ -1781,10 +1779,10 @@ public class SilantroController : MonoBehaviour {
 		if (engineType == EngineType.TurboProp) {
 			totalThrustGenerated = 0;totalConsumptionRate = 0;
 			foreach (SilantroTurboProp prop in turboProps) {
-				totalConsumptionRate += prop.actualConsumptionrate;
+				if (prop.active) { totalConsumptionRate += prop.actualConsumptionrate; }
 			}
 			foreach (SilantroBlade blade in blades) {
-				totalThrustGenerated += blade.Thrust;
+				if (blade.currentRPM > 10f) { totalThrustGenerated += blade.Thrust; }
 			}
 			SilantroTurboProp sampleEngine = turboProps [0];
 			float coreFactor = sampleEngine.coreFactor;
@@ -1796,7 +1794,7 @@ public class SilantroController : MonoBehaviour {
 		if (engineType == EngineType.Electric) {
 			totalThrustGenerated = 0;
 			foreach (SilantroBlade blade in blades) {
-				totalThrustGenerated += blade.Thrust;
+				if (blade.currentRPM > 10f) { totalThrustGenerated += blade.Thrust; }
 			}
 			SilantroElectricMotor sampleEngine = motors [0];
 			//float coreFactor = sampleEngine.coreFactor;

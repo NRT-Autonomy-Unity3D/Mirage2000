@@ -159,7 +159,7 @@ public class SilantroPylon : MonoBehaviour {
 		if(fireCondition == FireCondition.Overide) { actualWaitTime = openTime; }
 		if(fireCondition == FireCondition.Normal) { actualWaitTime = pylonBay.openTime; }
 
-		yield return new WaitForSeconds (openTime);
+		yield return new WaitForSeconds (actualWaitTime);
 		//RELEASE MUNITION
 		if (munitionType == OrdnanceType.Missile) {LaunchMissile ();}
 		if (munitionType == OrdnanceType.Bomb) {BombRelease ();}

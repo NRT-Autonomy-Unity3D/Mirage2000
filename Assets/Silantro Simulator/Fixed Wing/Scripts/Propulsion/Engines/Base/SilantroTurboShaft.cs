@@ -320,7 +320,7 @@ public class SilantroTurboShaft : MonoBehaviour {
 	{
 		if (isControllable) {
 			//SEND CALCULATION DATA
-			if (corePower > 0f) {EngineCalculation ();}
+			if (corePower > 0f) {EngineCalculation ();} else { brakePower = 0f; }
 			//SEND CORE DATA
 			CoreEngine();
 			//ENGINE STATE CONTROL
@@ -554,7 +554,7 @@ public class SilantroTurboShaft : MonoBehaviour {
 		Pt /= 1000f;
 		brakePower = (Pt / 0.7457f)*coreFactor;if(brakePower < 0){brakePower = 0;}
 
-		TSFC = ((Mf * 3600f) / (brakePower));actualConsumptionrate = Mf;
+		TSFC = ((Mf * 3600f) / (brakePower));actualConsumptionrate = Mf*coreFactor;
 	}
 }
 

@@ -351,7 +351,7 @@ public class SilantroTurboJet : MonoBehaviour {
 	{
 		if (isControllable) {
 		//SEND CALCULATION DATA
-		if (corePower > 0f) {EngineCalculation ();}
+		if (corePower > 0f) {EngineCalculation(); } else { EngineThrust = 0f; }
 		//SEND CORE DATA
 		CoreEngine();
 		//ENGINE STATE CONTROL
@@ -651,7 +651,7 @@ public class SilantroTurboJet : MonoBehaviour {
 		no *= 100f;
 		//
 		float pt = EngineThrust*0.2248f;
-		TSFC = ((Mf * 3600f) / (pt * 0.4536f));actualConsumptionrate = Mf;
+		TSFC = ((Mf * 3600f) / (pt * 0.4536f));actualConsumptionrate = Mf*coreFactor;
 		if (afterburnerOperative && FuelInput < 0.5f) {afterburnerOperative = false;}
 	}
 }

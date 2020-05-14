@@ -274,7 +274,7 @@ public class SilantroPistonEngine: MonoBehaviour {
 	{
 		if(allOk && isControllable){
 			//SEND CALCULATION DATA
-			if (corePower > 0f) {EngineCalculation ();}
+			if (corePower > 0f) {EngineCalculation ();} else { brakePower = 0f; }
 			//SEND CORE DATA
 			CoreEngine();
 			//ENGINE STATE CONTROL

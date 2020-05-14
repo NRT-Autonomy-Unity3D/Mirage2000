@@ -25,18 +25,15 @@ public class SilantroCamera : MonoBehaviour
     //
     public enum CameraState
     {
-        Interior, Nose, Tail
+        Interior, Exterior, Nose, Tail
     }
-    //[HideInInspector]
-    public CameraState cameraState = CameraState.Interior;
+    [HideInInspector] public CameraState cameraState = CameraState.Exterior;
     //CONNECTION
-    public GameObject cameraTarget;
-    public GameObject cameraTarget_front;
-    public GameObject cameraTarget_back;
-    public Camera actualCamera;
-    public Camera actualCamera_front;
-    public Camera actualCamera_back;
-    public Camera currentCamera;
+    [HideInInspector] public GameObject cameraTarget;
+    [HideInInspector] public Camera actualCamera;
+    public Camera noseCamera;
+    public Camera tailCamera;
+    [HideInInspector] public Camera currentCamera;
     //
     //CHASE CAMERA PROPERTIES
     [HideInInspector] public bool isControllable = true;
@@ -84,9 +81,6 @@ public class SilantroCamera : MonoBehaviour
     // ---------------------------------------------------------CONTROL FUNCTIONS-------------------------------------------------------------------------------------------------
     public void ActivateInteriorCamera()
     {
-        if (afterInitialization == false)
-            afterInitialization = true;
-
         if (isControllable)
         {
             if (interiorcamera != null)
@@ -97,6 +91,12 @@ public class SilantroCamera : MonoBehaviour
                 if (exteriorListener != null)
                 {
                     exteriorListener.enabled = false;
+                }
+
+                if (noseCamera != null)
+                {
+                    //DISABLE NOSE CAMERA
+                    noseCamera.enabled = false;
                 }
                 //CHANGE PILOT STATE
                 if (interiorPilot != null)
@@ -141,7 +141,6 @@ public class SilantroCamera : MonoBehaviour
 
 
     // ----------------------------------------------------------------------------------------------------------------------------------------------------------
-    bool afterInitialization = false;
     public void ActivateExteriorCamera()
     {
         if (isControllable && actualCamera != null)
@@ -156,69 +155,24 @@ public class SilantroCamera : MonoBehaviour
                     interiorListener.enabled = false;
                 }
             }
+            if (noseCamera != null)
+            {
+                //DISABLE NOSE CAMERA
+                noseCamera.enabled = false;
+            }
+            if (tailCamera != null)
+            {
+                //DISABLE TAIL CAMERA
+                tailCamera.enabled = false;
+            }
+
             //CHANGE PILOT STATE
             if (interiorPilot != null)
             {
                 interiorPilot.SetActive(true);
             }
-
-            if (afterInitialization == true)
-            {
-                if (cameraState == CameraState.Nose)
-                {
-                    actualCamera = actualCamera_back;
-                    cameraTarget = cameraTarget_back;
-                    cameraState = CameraState.Tail;
-                    actualCamera_front.enabled = false;
-                    AudioListener exteriorListener_front = actualCamera_front.GetComponent<AudioListener>();
-                    if (exteriorListener_front != null)
-                    {
-                        exteriorListener_front.enabled = false;
-                    }
-                }
-                else
-                {
-                    actualCamera = actualCamera_front;
-                    cameraTarget = cameraTarget_front;
-                    cameraState = CameraState.Nose;
-                    actualCamera_back.enabled = false;
-                    AudioListener exteriorListener_back = actualCamera_back.GetComponent<AudioListener>();
-                    if (exteriorListener_back != null)
-                    {
-                        exteriorListener_back.enabled = false;
-                    }
-                }
-            }
-            else
-            {
-                if (cameraState == CameraState.Nose)
-                {
-                    actualCamera = actualCamera_front;
-                    cameraTarget = cameraTarget_front;
-                    cameraState = CameraState.Nose;
-                    actualCamera_back.enabled = false;
-                    AudioListener exteriorListener_back = actualCamera_back.GetComponent<AudioListener>();
-                    if (exteriorListener_back != null)
-                    {
-                        exteriorListener_back.enabled = false;
-                    }
-                }
-                else
-                {
-                    actualCamera = actualCamera_back;
-                    cameraTarget = cameraTarget_back;
-                    cameraState = CameraState.Tail;
-                    actualCamera_front.enabled = false;
-                    AudioListener exteriorListener_front = actualCamera_front.GetComponent<AudioListener>();
-                    if (exteriorListener_front != null)
-                    {
-                        exteriorListener_front.enabled = false;
-                    }
-                }
-                afterInitialization = true;
-            }
+            cameraState = CameraState.Exterior;
             //ENABLE EXTERIOR CAMERA
-            
             actualCamera.enabled = true;
             AudioListener exteriorListener = actualCamera.GetComponent<AudioListener>();
             if (exteriorListener != null)
@@ -235,7 +189,101 @@ public class SilantroCamera : MonoBehaviour
         }
     }
 
+    public void ActivateNoseCamera()
+    {
+        if (isControllable && noseCamera != null)
+        {
+            if (interiorcamera != null)
+            {
+                //DISABLE INTERIOR CAMERA
+                interiorcamera.enabled = false;
+                AudioListener interiorListener = interiorcamera.GetComponent<AudioListener>();
+                if (interiorListener != null)
+                {
+                    interiorListener.enabled = false;
+                }
+            }
+            if (actualCamera != null)
+            {
+                //DISABLE EXTERIOR CAMERA
+                actualCamera.enabled = false;
+            }
+            if (tailCamera != null)
+            {
+                //DISABLE TAIL CAMERA
+                tailCamera.enabled = false;
+            }
 
+            //CHANGE PILOT STATE
+            if (interiorPilot != null)
+            {
+                interiorPilot.SetActive(true);
+            }
+            cameraState = CameraState.Nose;
+            //ENABLE NOSE CAMERA
+            noseCamera.enabled = true;
+            AudioListener exteriorListener = actualCamera.GetComponent<AudioListener>();
+            if (exteriorListener != null)
+            {
+                exteriorListener.enabled = true;
+            }
+            //
+            currentCamera = noseCamera;
+            //SET SOUND STATE
+            if (controller != null)
+            {
+                controller.currentSoundState = SilantroController.SoundState.Exterior;
+            }
+        }
+    }
+
+    public void ActivateTailCamera()
+    {
+        if (isControllable && tailCamera != null)
+        {
+            if (interiorcamera != null)
+            {
+                //DISABLE INTERIOR CAMERA
+                interiorcamera.enabled = false;
+                AudioListener interiorListener = interiorcamera.GetComponent<AudioListener>();
+                if (interiorListener != null)
+                {
+                    interiorListener.enabled = false;
+                }
+            }
+            if (actualCamera != null)
+            {
+                //DISABLE EXTERIOR CAMERA
+                actualCamera.enabled = false;
+            }
+            if (noseCamera != null)
+            {
+                //DISABLE NOSE CAMERA
+                noseCamera.enabled = false;
+            }
+
+            //CHANGE PILOT STATE
+            if (interiorPilot != null)
+            {
+                interiorPilot.SetActive(true);
+            }
+            cameraState = CameraState.Tail;
+            //ENABLE TAIL CAMERA
+            tailCamera.enabled = true;
+            AudioListener exteriorListener = actualCamera.GetComponent<AudioListener>();
+            if (exteriorListener != null)
+            {
+                exteriorListener.enabled = true;
+            }
+            //
+            currentCamera = tailCamera;
+            //SET SOUND STATE
+            if (controller != null)
+            {
+                controller.currentSoundState = SilantroController.SoundState.Exterior;
+            }
+        }
+    }
 
     // ----------------------------------------------------------------------------------------------------------------------------------------------------------
     public void ActivateAndSetExteriorCamera(int mode)
@@ -251,7 +299,7 @@ public class SilantroCamera : MonoBehaviour
             }
             //CHANGE PILOT STATE
             if (interiorPilot != null) { interiorPilot.SetActive(true); }
-            cameraState = CameraState.Nose;
+            cameraState = CameraState.Exterior;
             //ENABLE EXTERIOR CAMERA
             actualCamera.enabled = true;
             AudioListener exteriorListener = actualCamera.GetComponent<AudioListener>();
@@ -272,18 +320,10 @@ public class SilantroCamera : MonoBehaviour
     {
         if (isControllable)
         {
-            if (cameraState == CameraState.Nose) 
-            {
-                ActivateExteriorCamera();
-            }
-            else if (cameraState == CameraState.Tail)
-            {
-                ActivateInteriorCamera();
-            }
-            else 
-            { 
-                ActivateExteriorCamera(); 
-            }
+            if (cameraState == CameraState.Exterior) { ActivateInteriorCamera(); }
+            else if(cameraState == CameraState.Interior) { ActivateNoseCamera(); }
+            else if (cameraState == CameraState.Nose) { ActivateTailCamera(); }
+            else { ActivateExteriorCamera(); }
         }
     }
 
@@ -359,15 +399,8 @@ public class SilantroCamera : MonoBehaviour
                 CartesianToSpherical(cameraTarget.transform.InverseTransformDirection(actualCamera.transform.position - cameraTarget.transform.position), out radius, out azimuth, out elevation);
                 actualCamera.transform.LookAt(cameraTarget.transform);
             }
-            //SETUP CAMERA
-            if (cameraState == CameraState.Nose || cameraState == CameraState.Tail)
-            {
-                ActivateExteriorCamera();
-            }
-            else
-            {
-                ActivateInteriorCamera();
-            }
+            //SETUP CAMERA AS EXTERIOR
+            ActivateExteriorCamera();
             //STORE CAMERA PROPERTIES
             if (interiorcamera != null)
             {
@@ -392,7 +425,7 @@ public class SilantroCamera : MonoBehaviour
             if (cameraType == CameraType.Aircraft)
             {
                 //PROCESS EXTERior CAMERAS
-                if (cameraState == CameraState.Nose || cameraState == CameraState.Tail)
+                if (cameraState == CameraState.Exterior)
                 {
                     //SEND ORBIT DATA
                     if (cameraMode == CameraMode.Orbit)
@@ -409,6 +442,9 @@ public class SilantroCamera : MonoBehaviour
                     {
                         ChaseSystem();
                     }
+                }
+                else if (cameraState == CameraState.Nose || cameraState == CameraState.Tail)
+                {
                 }
                 else
                 {
@@ -629,27 +665,24 @@ public class CameraEditor : Editor
             EditorGUILayout.HelpBox("Functionality Configuration", MessageType.None);
             GUI.color = backgroundColor;
             GUILayout.Space(5f);
-            toolbarTab = GUILayout.Toolbar(toolbarTab, new string[] { "Nose Camera", "Interior Camera", "Tail Camera" });
+            toolbarTab = GUILayout.Toolbar(toolbarTab, new string[] { "Exterior Camera", "Interior Camera" });
             switch (toolbarTab)
             {
                 case 0:
-                    currentTab = "Nose Camera";
+                    currentTab = "Exterior Camera";
                     break;
                 case 1:
                     currentTab = "Interior Camera";
-                    break;
-                case 2:
-                    currentTab = "Tail Back";
                     break;
             }
             //
             switch (currentTab)
             {
                 //
-                case "Nose Camera":
+                case "Exterior Camera":
                     //
                     GUILayout.Space(3f);
-                    camera.actualCamera = EditorGUILayout.ObjectField("Nose Camera", camera.actualCamera, typeof(Camera), true) as Camera;
+                    camera.actualCamera = EditorGUILayout.ObjectField("Exterior Camera", camera.actualCamera, typeof(Camera), true) as Camera;
                     GUILayout.Space(7f);
                     camera.cameraMode = (SilantroCamera.CameraMode)EditorGUILayout.EnumPopup(" ", camera.cameraMode);
                     //
@@ -742,81 +775,6 @@ public class CameraEditor : Editor
                     camera.clampAngle = EditorGUILayout.Slider("View Angle", camera.clampAngle, 10f, 210f);
                     GUILayout.Space(5f);
                     camera.snap = EditorGUILayout.Toggle("Snap Camera", camera.snap);
-                    break;
-                case "Tail Camera":
-                    //
-                    GUILayout.Space(3f);
-                    camera.actualCamera = EditorGUILayout.ObjectField("Tail Camera", camera.actualCamera, typeof(Camera), true) as Camera;
-                    GUILayout.Space(7f);
-                    camera.cameraMode = (SilantroCamera.CameraMode)EditorGUILayout.EnumPopup(" ", camera.cameraMode);
-                    //
-                    if (camera.cameraMode == SilantroCamera.CameraMode.Chase)
-                    {
-                        GUILayout.Space(5f);
-                        GUI.color = Color.white;
-                        EditorGUILayout.HelpBox("Chase Camera Settings", MessageType.None);
-                        GUI.color = backgroundColor;
-                        GUILayout.Space(2f);
-                        camera.cameraTarget = EditorGUILayout.ObjectField("Aircraft", camera.cameraTarget, typeof(GameObject), true) as GameObject;
-                        GUILayout.Space(5f);
-                        GUI.color = Color.white;
-                        EditorGUILayout.HelpBox("Camera Movement", MessageType.None);
-                        GUI.color = backgroundColor;
-                        GUILayout.Space(2f);
-                        camera.chaseSpeed = EditorGUILayout.FloatField("Chase Speed", camera.chaseSpeed);
-                        GUILayout.Space(2f);
-                        camera.turnSpeed = EditorGUILayout.FloatField("Turn Speed", camera.turnSpeed);
-                        GUILayout.Space(5f);
-                        GUI.color = Color.white;
-                        EditorGUILayout.HelpBox("Camera Positioning", MessageType.None);
-                        GUI.color = backgroundColor;
-                        GUILayout.Space(2f);
-                        camera.cameraHeight = EditorGUILayout.FloatField("Camera Height", camera.cameraHeight);
-                        GUILayout.Space(2f);
-                        camera.lateralDistance = EditorGUILayout.FloatField("Lateral Distance", camera.lateralDistance);
-                        GUILayout.Space(2f);
-                        camera.cameraDistance = EditorGUILayout.FloatField("View Distance", camera.cameraDistance);
-                    }
-                    if (camera.cameraMode == SilantroCamera.CameraMode.Free)
-                    {
-                        GUILayout.Space(5f);
-                        GUI.color = Color.white;
-                        EditorGUILayout.HelpBox("Free Camera Settings", MessageType.None);
-                        GUI.color = backgroundColor;
-                        GUILayout.Space(2f);
-                        camera.cameraTarget = EditorGUILayout.ObjectField("Focus Point", camera.cameraTarget, typeof(GameObject), true) as GameObject;
-                        GUILayout.Space(5f);
-                        GUI.color = Color.white;
-                        EditorGUILayout.HelpBox("Camera Movement", MessageType.None);
-                        GUI.color = backgroundColor;
-                        GUILayout.Space(2f);
-                        camera.elevationSensitivity = EditorGUILayout.Slider("Elevation Sensitivity", camera.elevationSensitivity, 0f, 1f);
-                        GUILayout.Space(2f);
-                        camera.azimuthSensitivity = EditorGUILayout.Slider("Azimuth Sensitivity", camera.azimuthSensitivity, 0f, 1f);
-                        GUILayout.Space(5f);
-                        GUI.color = Color.white;
-                        EditorGUILayout.HelpBox("Camera Positioning", MessageType.None);
-                        GUI.color = backgroundColor;
-                        GUILayout.Space(2f);
-                        camera.maximumRadius = EditorGUILayout.FloatField("Camera Distance", camera.maximumRadius);
-                    }
-                    if (camera.cameraMode == SilantroCamera.CameraMode.Orbit)
-                    {
-                        GUILayout.Space(5f);
-                        GUI.color = Color.white;
-                        EditorGUILayout.HelpBox("Orbit Camera Settings", MessageType.None);
-                        GUI.color = backgroundColor;
-                        GUILayout.Space(2f);
-                        camera.cameraTarget = EditorGUILayout.ObjectField("Focus Point", camera.cameraTarget, typeof(GameObject), true) as GameObject;
-                        GUILayout.Space(5f);
-                        GUI.color = Color.white;
-                        EditorGUILayout.HelpBox("Camera Positioning", MessageType.None);
-                        GUI.color = backgroundColor;
-                        GUILayout.Space(2f);
-                        camera.orbitDistance = EditorGUILayout.FloatField("Orbit Distance", camera.orbitDistance);
-                        GUILayout.Space(3f);
-                        camera.orbitHeight = EditorGUILayout.FloatField("Orbit Height", camera.orbitHeight);
-                    }
                     break;
             }
         }

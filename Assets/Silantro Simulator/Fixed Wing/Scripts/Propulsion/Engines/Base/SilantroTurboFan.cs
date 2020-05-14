@@ -389,7 +389,7 @@ public class SilantroTurboFan : MonoBehaviour {
 	{
 		if (isControllable) {
 			//SEND CALCULATION DATA
-			if (corePower > 0f) {EngineCalculation ();}
+			if (corePower > 0f) {EngineCalculation ();} else { EngineThrust = 0f; }
 			//SEND CORE DATA
 			CoreEngine();
 			//ENGINE STATE CONTROL
@@ -507,6 +507,7 @@ public class SilantroTurboFan : MonoBehaviour {
 		else if(corePower > 0f){corePower -= Time.deltaTime * coreAcceleration;}
 		if (corePower > 1) {corePower = 1f;}if (!active && corePower < 0) {corePower = 0f;}
 	}
+
 
 
 	// ----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -708,11 +709,11 @@ public class SilantroTurboFan : MonoBehaviour {
 			//THRUST
 			CoreThrust = (((1 + f) * exhaustVelocity) - (speed)) * Ma;
 			PressureThrust = (Ae * (((P6/(1.905f*pc_p8)) - Pa) * 1000));
-				EngineThrust = (CoreThrust + PressureThrust)*throttleFactor;
+				EngineThrust = (CoreThrust + PressureThrust)*throttleFactor*coreFactor;
 		} else {
 			CoreThrust = (((1 + f+fab) * exhaustVelocity) - (speed)) * Ma;
 			PressureThrust = (Aeb * ((P10- Pa) * 1000));
-				EngineThrust = (CoreThrust + PressureThrust)*throttleFactor;;
+				EngineThrust = (CoreThrust + PressureThrust)*throttleFactor*coreFactor;
 			}
 		}
 
